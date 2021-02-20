@@ -1,41 +1,44 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const shortLinks = require('../fixtures/shortLinks');
-
 const keyGen = require('../lib/keyGen');
+const cassyClient = require('../lib/cassandra');
 
 function getUrls(req, res) {
-    res.send(shortLinks);
+    
+    cassyClient.getAllUrls()
+        .then(keyMap => res.send(keyMap));
+
 };
 
 function redirectToUrl(req, res) {
-    nextUrl = undefined;
 
-    if (shortLinks[req.params.shortLink]) {
-        nextUrl = shortLinks[req.params.shortLink];
-    }
+    cassyClient.getUrl(req.params.url)
+    .then((nextUrl) => {
+        if (nextUrl) {
+            res.redirect(nextUrl);
+        } else { 
+            res.redirect('http://localhost:3000/');
+        }
+    });
 
-    if (nextUrl) {
-        res.redirect(nextUrl);
-    } else { 
-        res.redirect('http://localhost:3000/');
-    }
 }
 
 function createUrl(req, res) {
+
     let newUrl = req.body.url
     keyGen()
         .then(shortKey => {
-            shortLinks[shortKey] = newUrl;
-            res.send(shortKey);
+            cassyClient.insertCode(shortKey, newUrl)
+            .then(() => res.send(shortKey));
         });
+
 }
 
 urlRouter = express.Router();
 
 urlRouter.get('/', getUrls);
-urlRouter.get('/:shortLink', redirectToUrl);
+urlRouter.get('/:url', redirectToUrl);
 urlRouter.post('/', bodyParser.json(), createUrl);
 
 module.exports = urlRouter;
