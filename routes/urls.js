@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-const keyGen = require('../lib/keyGen');
+const keyGen = require('keygen');
 const cassyClient = require('../lib/cassandra');
 
 function getUrls(req, res) {
@@ -27,7 +27,7 @@ function redirectToUrl(req, res) {
 function createUrl(req, res) {
 
     let newUrl = req.body.url
-    keyGen()
+    keyGen(4)
         .then(shortKey => {
             cassyClient.insertCode(shortKey, newUrl)
             .then(() => res.send(shortKey));
