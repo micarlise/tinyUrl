@@ -14,3 +14,8 @@ services:
     entrypoint: [ "bash", "-c", "sleep 20 && cqlsh cassandra < /models/cassy_schema.cql" ]
     volumes:
       - ./models:/models
+  mongodb:
+    image: mongo:4.4
+    container_name: mongodb
+    ports:
+      - 27017:27017
