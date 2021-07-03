@@ -33,6 +33,7 @@
     "cassandra-driver": "^4.6.1",
     "express": "^4.17.1",
     "keygen": "github:micarlise/keygen",
+    "mongodb": "^3.6.9",
     "morgan": "^1.10.0"
   }
 }
