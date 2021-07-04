@@ -2,18 +2,18 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const keyGen = require('keygen');
-const cassyClient = require('../lib/cassandra');
+const mongoClient = require('../lib/mongo');
 
 function getUrls(req, res) {
     
-    cassyClient.getAllUrls()
+    mongoClient.getAllUrls()
         .then(keyMap => res.send(keyMap));
 
 };
 
 function redirectToUrl(req, res) {
 
-    cassyClient.getUrl(req.params.url)
+    mongoClient.getUrl(req.params.url)
     .then((nextUrl) => {
         if (nextUrl) {
             res.redirect(nextUrl);
@@ -29,7 +29,7 @@ function createUrl(req, res) {
     let newUrl = req.body.url
     keyGen(4)
         .then(shortKey => {
-            cassyClient.insertCode(shortKey, newUrl)
+            mongoClient.insertCode(shortKey, newUrl)
             .then(() => res.send(shortKey));
         });
 
